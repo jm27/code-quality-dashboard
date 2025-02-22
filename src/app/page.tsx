@@ -34,19 +34,6 @@ export default function Home() {
     }
   };
 
-  // const data = {
-  //   labels: ["Code Complexity", "Errors", "Readability"],
-  //   datasets: [{
-  //     label: 'Code Quality Score',
-  //     data: [6.2, 3, 8.5],
-  //     backgroundColor: [
-  //       '#FF6384',
-  //       '#36A2EB',
-  //       '#4BC0C0'
-  //     ]
-  //   }]
-  // };
-
   return (
     <main className="min-h-screen p-8">
       <Navbar />
