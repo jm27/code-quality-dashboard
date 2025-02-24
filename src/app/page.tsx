@@ -12,6 +12,7 @@ import {
 } from "chart.js";
 import { Bar, Line } from "react-chartjs-2";
 import { analyzeCode } from "@/api/api";
+import SyntaxHighlighter from "react-syntax-highlighter";
 
 interface AnalysisResult {
   complexity: number;
@@ -63,22 +64,42 @@ export default function Home() {
       </div>
       <div className="max-w-3xl mx-auto">
         {data && (
-          <div className="bg-white p-6 rounded-lg shadow-md mt-6">
-            <Bar
-              data={{
-                labels: ["Code Complexity", "Errors", "Readability"],
-                datasets: [
-                  {
-                    label: "Code Quality Score",
-                    data: data
-                      ? [data.complexity, data.errors, data.readability]
-                      : [],
-                    backgroundColor: ["#4BC0C0", "#FF6384", "#36A2EB"],
-                  },
-                ],
-              }}
-            />
-          </div>
+          <>
+            <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+              <SyntaxHighlighter
+                language="python"
+                showLineNumbers={true}
+                startingLineNumber={1}
+                wrapLines={true}
+                lineProps={(lineNumber: number) => {
+                  const line = code.split("\n")[lineNumber - 1];
+                  const hasError = line ? line.includes(";") : false;
+                  console.log(
+                    `lineNumber: ${lineNumber}, hasError: ${hasError}`
+                  );
+                  return hasError ? { style: { background: "#FFF0F0" } } : {};
+                }}
+              >
+                {code}
+              </SyntaxHighlighter>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+              <Bar
+                data={{
+                  labels: ["Code Complexity", "Errors", "Readability"],
+                  datasets: [
+                    {
+                      label: "Code Quality Score",
+                      data: data
+                        ? [data.complexity, data.errors, data.readability]
+                        : [],
+                      backgroundColor: ["#4BC0C0", "#FF6384", "#36A2EB"],
+                    },
+                  ],
+                }}
+              />
+            </div>
+          </>
         )}
         {history.length > 0 && (
           <div className="bg-white p-6 rounded-lg shadow-md mt-6">
