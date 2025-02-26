@@ -34,16 +34,29 @@ export default function Home() {
   const [code, setCode] = useState("");
   const [data, setData] = useState<AnalysisResult | null>(null);
   const [history, setHistory] = useState<AnalysisResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleAnalyze = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await analyzeCode(code);
       const result = { ...response.data, timestamp: new Date().toISOString() };
       setData(response.data);
       setHistory((prev: AnalysisResult[]) => [result, ...prev.slice(0, 4)]); // Keep only the last 5 results
     } catch (error) {
+      setError("An error occurred while analyzing the code.");
       console.error(error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCode(e.target.value);
+    setData(null);
+    setError(null);
   };
 
   return (
@@ -53,16 +66,18 @@ export default function Home() {
         <textarea
           className="w-full p-2 border rounded mb-4"
           placeholder="Paste code here..."
-          onChange={(e) => setCode(e.target.value)}
+          onChange={handleInputChange}
         ></textarea>
         <button
           onClick={handleAnalyze}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          disabled={loading}
         >
-          Analyze Code
+          {loading ? "Analyzing..." : "Analyze Code"}
         </button>
       </div>
       <div className="max-w-3xl mx-auto">
+        {error && <div className="text-red-500 mt-4">{error}</div>}
         {data && (
           <>
             <div className="bg-white p-6 rounded-lg shadow-md mt-6">
@@ -101,6 +116,17 @@ export default function Home() {
             </div>
           </>
         )}
+        {data && (
+          <div className="grid grid-cols-3 gap-4 mt-6">
+            <div className="bg-green-50 p-4 rounded">
+              Complexity: {data.complexity}
+            </div>
+            <div className="bg-red-50 p-4 rounded">Errors: {data.errors}</div>
+            <div className="bg-blue-100 p-4 rounded">
+              Readability: {data.readability}
+            </div>
+          </div>
+        )}
         {history.length > 0 && (
           <div className="bg-white p-6 rounded-lg shadow-md mt-6">
             <Line
@@ -133,17 +159,6 @@ export default function Home() {
           </div>
         )}
       </div>
-      {data && (
-        <div className="grid grid-cols-3 gap-4 mt-6">
-          <div className="bg-green-50 p-4 rounded">
-            Complexity: {data.complexity}
-          </div>
-          <div className="bg-red-50 p-4 rounded">Errors: {data.errors}</div>
-          <div className="bg-blue-100 p-4 rounded">
-            Readability: {data.readability}
-          </div>
-        </div>
-      )}
     </main>
   );
 }
