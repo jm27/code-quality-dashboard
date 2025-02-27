@@ -99,6 +99,7 @@ export default function Home() {
               </SyntaxHighlighter>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+              <h3 className="text-lg font-semibold mb-4">Code Analysis Result</h3>
               <Bar
                 data={{
                   labels: ["Code Complexity", "Errors", "Readability"],
@@ -129,6 +130,7 @@ export default function Home() {
         )}
         {history.length > 0 && (
           <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+            <h3 className="text-lg font-semibold mb-4">Analysis History</h3>
             <Line
               data={{
                 labels: history.map((_, i) => `Analysis ${i + 1}`),
